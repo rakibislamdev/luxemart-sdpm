@@ -1,0 +1,91 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Payments | Luxemart Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page-header">
+  <div>
+    <span class="admin-kicker">Payment verification</span>
+    <h1>Payments</h1>
+    <p>Verify transaction IDs, inspect uploaded proofs, approve payments, and reject invalid submissions.</p>
+  </div>
+  <form class="admin-filter" method="get">
+    <select class="form-select form-select-sm" name="status">
+      <option value="">All payments</option>
+      {% for value,label in status_choices %}
+        <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-outline-light btn-sm" type="submit">Filter</button>
+  </form>
+</div>
+
+<div class="admin-stat-grid admin-stat-grid--small">
+  <article class="admin-stat-card">
+    <span>Approved amount</span>
+    <strong>৳{{ approved_amount|floatformat:2 }}</strong>
+    <small>Recorded revenue</small>
+  </article>
+  <article class="admin-stat-card">
+    <span>Pending amount</span>
+    <strong>৳{{ pending_amount|floatformat:2 }}</strong>
+    <small>Needs review</small>
+  </article>
+  {% for item in status_breakdown %}
+    <article class="admin-stat-card">
+      <span>{{ item.label }}</span>
+      <strong>{{ item.count }}</strong>
+      <small>{{ item.percent }}% of payments</small>
+    </article>
+  {% endfor %}
+</div>
+
+<section class="admin-panel">
+  <div class="admin-panel__header">
+    <h2>Payment requests</h2>
+  </div>
+  <div class="table-responsive">
+    <table class="admin-table admin-table--middle">
+      <thead>
+        <tr><th>Transaction</th><th>Customer</th><th>Order</th><th>Method</th><th>Proofs</th><th>Status</th><th>Update</th></tr>
+      </thead>
+      <tbody>
+        {% for payment in payments %}
+          <tr>
+            <td>
+              <strong>{{ payment.transaction_id }}</strong>
+              <small>৳{{ payment.amount|floatformat:2 }}</small>
+            </td>
+            <td>{{ payment.user.get_username }}<small>{{ payment.user.email }}</small></td>
+            <td>#{{ payment.order_id }}</td>
+            <td>{{ payment.get_method_display }}</td>
+            <td>
+              <div class="admin-item-stack">
+                {% for proof in payment.proofs.all %}
+                  <a href="{{ proof.file.url }}" target="_blank" rel="noopener">Proof {{ forloop.counter }}</a>
+                {% empty %}
+                  <span>No proof uploaded</span>
+                {% endfor %}
+              </div>
+            </td>
+            <td><span class="status-pill status-pill--{{ payment.status }}">{{ payment.get_status_display }}</span></td>
+            <td>
+              <form method="post" class="admin-inline-form">
+                {% csrf_token %}
+                <input type="hidden" name="payment_id" value="{{ payment.pk }}">
+                <select class="form-select form-select-sm" name="status">
+                  {% for value,label in status_choices %}
+                    <option value="{{ value }}" {% if payment.status == value %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+                <button class="btn btn-primary btn-sm" type="submit">Save</button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="7">No payments found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Deliveries | Luxemart Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page-header">
+  <div>
+    <span class="admin-kicker">Fulfillment</span>
+    <h1>Deliveries</h1>
+    <p>Assign shipment details, update delivery progress, and keep tracking visible for each order.</p>
+  </div>
+</div>
+
+<section class="admin-panel mb-3">
+  <div class="admin-panel__header"><h2>Delivery status</h2></div>
+  <div class="admin-status-strip">
+    {% for item in delivery_statuses %}
+      <div>
+        <strong>{{ item.count }}</strong>
+        <span>{{ item.status|title }}</span>
+      </div>
+    {% empty %}
+      <div><strong>0</strong><span>No deliveries</span></div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="admin-panel">
+  <div class="admin-panel__header">
+    <h2>Shipment tracking</h2>
+  </div>
+  <div class="table-responsive">
+    <table class="admin-table admin-table--middle">
+      <thead>
+        <tr><th>Order</th><th>Customer</th><th>Status</th><th>Carrier</th><th>Tracking</th><th>Delivered at</th><th>Update</th></tr>
+      </thead>
+      <tbody>
+        {% for delivery in deliveries %}
+          <tr>
+            <td>#{{ delivery.order_id }}<small>{{ delivery.order.created_at|date:"M d, Y" }}</small></td>
+            <td>{{ delivery.order.user.get_username }}<small>{{ delivery.order.user.email }}</small></td>
+            <td><span class="status-pill status-pill--{{ delivery.status }}">{{ delivery.status|title }}</span></td>
+            <td>
+              <form id="delivery-{{ delivery.pk }}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="delivery_id" value="{{ delivery.pk }}">
+              </form>
+              <input class="form-control form-control-sm" form="delivery-{{ delivery.pk }}" name="carrier" value="{{ delivery.carrier }}">
+            </td>
+            <td><input class="form-control form-control-sm" form="delivery-{{ delivery.pk }}" name="tracking_number" value="{{ delivery.tracking_number }}"></td>
+            <td><input class="form-control form-control-sm" form="delivery-{{ delivery.pk }}" type="datetime-local" name="delivered_at" value="{{ delivery.delivered_at|date:'Y-m-d\\TH:i' }}"></td>
+            <td>
+              <div class="admin-inline-form">
+                <input class="form-control form-control-sm" form="delivery-{{ delivery.pk }}" name="status" value="{{ delivery.status }}">
+                <button class="btn btn-primary btn-sm" form="delivery-{{ delivery.pk }}" type="submit">Save</button>
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="7">No delivery records found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

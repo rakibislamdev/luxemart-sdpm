@@ -1,0 +1,125 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Products | Luxemart Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page-header">
+  <div>
+    <span class="admin-kicker">Catalog control</span>
+    <h1>Products</h1>
+    <p>Create products, update prices, control visibility, upload images, and watch inventory.</p>
+  </div>
+</div>
+
+<div class="admin-grid admin-grid--form-table">
+  <section class="admin-panel">
+    <div class="admin-panel__header">
+      <h2>{% if edit_product %}Edit product{% else %}Add product{% endif %}</h2>
+      {% if edit_product %}<a href="{% url 'dashboard:products' %}">Clear</a>{% endif %}
+    </div>
+    <form method="post" enctype="multipart/form-data" class="admin-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="save">
+      {% if edit_product %}<input type="hidden" name="product_id" value="{{ edit_product.pk }}">{% endif %}
+      {{ form.non_field_errors }}
+      <label>Name {{ form.name }}</label>
+      <label>Slug {{ form.slug }}</label>
+      <label>SKU {{ form.sku }}</label>
+      <label>Category {{ form.category }}</label>
+      <div class="admin-form__split">
+        <label>Price {{ form.price }}</label>
+        <label>Stock {{ form.stock_quantity }}</label>
+      </div>
+      <label>Description {{ form.description }}</label>
+      <label>Product image <input type="file" name="image" class="form-control" accept="image/*,.pdf,.doc,.docx"></label>
+      <div class="admin-checks">
+        <label>{{ form.is_active }} Active</label>
+        <label>{{ form.featured }} Featured</label>
+      </div>
+      <button class="btn btn-primary w-100" type="submit">Save product</button>
+    </form>
+  </section>
+
+  <section class="admin-panel">
+    <div class="admin-panel__header">
+      <h2>Product inventory</h2>
+      <form class="admin-filter" method="get">
+        <input class="form-control form-control-sm" type="search" name="q" value="{{ search }}" placeholder="Search name or SKU">
+        <select class="form-select form-select-sm" name="stock">
+          <option value="">All products</option>
+          <option value="active" {% if stock_filter == 'active' %}selected{% endif %}>Active</option>
+          <option value="inactive" {% if stock_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+          <option value="low" {% if stock_filter == 'low' %}selected{% endif %}>Low stock</option>
+          <option value="out" {% if stock_filter == 'out' %}selected{% endif %}>Out of stock</option>
+        </select>
+        <button class="btn btn-outline-light btn-sm" type="submit">Filter</button>
+      </form>
+    </div>
+    <div class="table-responsive">
+      <table class="admin-table admin-table--middle">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in products %}
+            <tr>
+              <td>
+                <div class="admin-product-cell">
+                  {% with image=product.images.first %}
+                    {% if image %}
+                      <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:product.name }}">
+                    {% else %}
+                      <span>{{ product.name|first }}</span>
+                    {% endif %}
+                  {% endwith %}
+                  <div>
+                    <strong>{{ product.name }}</strong>
+                    <small>{{ product.sku }}</small>
+                  </div>
+                </div>
+              </td>
+              <td>{{ product.category.name }}</td>
+              <td>৳{{ product.price|floatformat:2 }}</td>
+              <td>
+                <span class="{% if product.stock_quantity <= 5 %}text-warning{% endif %}">{{ product.stock_quantity }}</span>
+              </td>
+              <td>
+                {% if product.is_active %}<span class="status-pill status-pill--approved">Active</span>{% else %}<span class="status-pill status-pill--rejected">Inactive</span>{% endif %}
+                {% if product.featured %}<span class="status-pill status-pill--featured">Featured</span>{% endif %}
+              </td>
+              <td>
+                <div class="admin-actions">
+                  <a class="btn btn-outline-light btn-sm" href="{% url 'dashboard:products' %}?edit={{ product.pk }}">Edit</a>
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.pk }}">
+                    <button class="btn btn-outline-light btn-sm" name="action" value="toggle_active" type="submit">{% if product.is_active %}Deactivate{% else %}Activate{% endif %}</button>
+                  </form>
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.pk }}">
+                    <button class="btn btn-outline-light btn-sm" name="action" value="toggle_featured" type="submit">{% if product.featured %}Unfeature{% else %}Feature{% endif %}</button>
+                  </form>
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.pk }}">
+                    <button class="btn btn-danger btn-sm" name="action" value="delete" type="submit">Delete</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="6">No products found.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

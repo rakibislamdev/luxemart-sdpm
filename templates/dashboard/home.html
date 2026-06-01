@@ -1,14 +1,190 @@
-{% extends 'base.html' %}
-{% block title %}Dashboard | Luxemart{% endblock %}
-{% block content %}
-<div class="hero-panel mb-4">
-  <h1 class="display-6 fw-bold mb-2">Admin Dashboard</h1>
-  <p class="text-white-50 mb-0">Monitor products, orders, payments, and live business metrics.</p>
+{% extends 'dashboard/base.html' %}
+{% block title %}Admin Dashboard | Luxemart{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page-header">
+  <div>
+    <span class="admin-kicker">Live operations</span>
+    <h1>Management Dashboard</h1>
+    <p>Revenue, orders, stock, users, and payment queues in one staff workspace.</p>
+  </div>
+  <div class="admin-header-actions">
+    <a class="btn btn-outline-light btn-sm" href="{% url 'dashboard:reports' %}">View reports</a>
+    <a class="btn btn-primary btn-sm" href="{% url 'dashboard:products' %}">Manage products</a>
+  </div>
 </div>
-<div class="row g-3">
-  <div class="col-md-3"><div class="stat-card">Users</div></div>
-  <div class="col-md-3"><div class="stat-card">Products</div></div>
-  <div class="col-md-3"><div class="stat-card">Orders</div></div>
-  <div class="col-md-3"><div class="stat-card">Revenue</div></div>
+
+<div class="admin-stat-grid">
+  <article class="admin-stat-card">
+    <span>Total revenue</span>
+    <strong>৳{{ total_revenue|floatformat:2 }}</strong>
+    <small>Approved payments</small>
+  </article>
+  <article class="admin-stat-card">
+    <span>Total sales</span>
+    <strong>৳{{ total_sales|floatformat:2 }}</strong>
+    <small>Delivered orders</small>
+  </article>
+  <article class="admin-stat-card">
+    <span>Orders</span>
+    <strong>{{ total_orders }}</strong>
+    <small>{{ pending_orders }} pending</small>
+  </article>
+  <article class="admin-stat-card">
+    <span>Payments</span>
+    <strong>{{ pending_payments }}</strong>
+    <small>Pending verification</small>
+  </article>
+  <article class="admin-stat-card">
+    <span>Products</span>
+    <strong>{{ active_products }}/{{ total_products }}</strong>
+    <small>{{ low_stock_count }} low stock</small>
+  </article>
+  <article class="admin-stat-card">
+    <span>Users</span>
+    <strong>{{ total_users }}</strong>
+    <small>{{ active_customers }} active customers</small>
+  </article>
+</div>
+
+<div class="admin-grid admin-grid--two">
+  <section class="admin-panel">
+    <div class="admin-panel__header">
+      <h2>Order pipeline</h2>
+      <a href="{% url 'dashboard:orders' %}">Manage</a>
+    </div>
+    <div class="status-list">
+      {% for item in order_statuses %}
+        <div class="status-row">
+          <div>
+            <strong>{{ item.label }}</strong>
+            <span>{{ item.count }} orders</span>
+          </div>
+          <div class="status-meter"><span style="width: {{ item.percent }}%"></span></div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="admin-panel">
+    <div class="admin-panel__header">
+      <h2>Payment verification</h2>
+      <a href="{% url 'dashboard:payments' %}">Review</a>
+    </div>
+    <div class="status-list">
+      {% for item in payment_statuses %}
+        <div class="status-row">
+          <div>
+            <strong>{{ item.label }}</strong>
+            <span>{{ item.count }} payments</span>
+          </div>
+          <div class="status-meter status-meter--warm"><span style="width: {{ item.percent }}%"></span></div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+<div class="admin-grid admin-grid--three">
+  <section class="admin-panel">
+    <div class="admin-panel__header">
+      <h2>Monthly sales</h2>
+      <a href="{% url 'dashboard:reports' %}">Report</a>
+    </div>
+    <div class="compact-list">
+      {% for row in monthly_sales %}
+        <div class="compact-list__row">
+          <span>{{ row.month|date:"M Y" }}</span>
+          <strong>৳{{ row.total|floatformat:2 }}</strong>
+        </div>
+      {% empty %}
+        <p class="admin-empty">No approved payments yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="admin-panel">
+    <div class="admin-panel__header">
+      <h2>Top products</h2>
+      <a href="{% url 'dashboard:reports' %}">Analyze</a>
+    </div>
+    <div class="compact-list">
+      {% for product in top_products %}
+        <div class="compact-list__row">
+          <span>{{ product.product__name }}</span>
+          <strong>৳{{ product.sales|floatformat:2 }}</strong>
+        </div>
+      {% empty %}
+        <p class="admin-empty">No product sales yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="admin-panel">
+    <div class="admin-panel__header">
+      <h2>Low stock watch</h2>
+      <a href="{% url 'dashboard:products' %}?stock=low">Fix stock</a>
+    </div>
+    <div class="compact-list">
+      {% for product in low_stock_products %}
+        <div class="compact-list__row">
+          <span>{{ product.name }}</span>
+          <strong>{{ product.stock_quantity }} left</strong>
+        </div>
+      {% empty %}
+        <p class="admin-empty">Inventory is healthy.</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+<div class="admin-grid admin-grid--two">
+  <section class="admin-panel">
+    <div class="admin-panel__header">
+      <h2>Recent orders</h2>
+      <a href="{% url 'dashboard:orders' %}">All orders</a>
+    </div>
+    <div class="table-responsive">
+      <table class="admin-table">
+        <thead><tr><th>Order</th><th>Customer</th><th>Status</th><th>Total</th></tr></thead>
+        <tbody>
+          {% for order in recent_orders %}
+            <tr>
+              <td>#{{ order.pk }}</td>
+              <td>{{ order.user.get_username }}</td>
+              <td><span class="status-pill status-pill--{{ order.status }}">{{ order.get_status_display }}</span></td>
+              <td>৳{{ order.total_amount|floatformat:2 }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4">No orders yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="admin-panel">
+    <div class="admin-panel__header">
+      <h2>Recent payments</h2>
+      <a href="{% url 'dashboard:payments' %}">All payments</a>
+    </div>
+    <div class="table-responsive">
+      <table class="admin-table">
+        <thead><tr><th>Transaction</th><th>Method</th><th>Status</th><th>Amount</th></tr></thead>
+        <tbody>
+          {% for payment in recent_payments %}
+            <tr>
+              <td>{{ payment.transaction_id }}</td>
+              <td>{{ payment.get_method_display }}</td>
+              <td><span class="status-pill status-pill--{{ payment.status }}">{{ payment.get_status_display }}</span></td>
+              <td>৳{{ payment.amount|floatformat:2 }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4">No payment submissions yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
 </div>
 {% endblock %}

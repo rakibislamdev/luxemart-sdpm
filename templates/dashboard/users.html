@@ -1,0 +1,118 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Users & Roles | Luxemart Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page-header">
+  <div>
+    <span class="admin-kicker">Access control</span>
+    <h1>Users & Roles</h1>
+    <p>Monitor customer accounts, staff privileges, role assignments, and account status.</p>
+  </div>
+</div>
+
+<div class="admin-grid admin-grid--two">
+  <section class="admin-panel">
+    <div class="admin-panel__header">
+      <h2>{% if edit_user %}Edit user{% else %}User controls{% endif %}</h2>
+      {% if edit_user %}<a href="{% url 'dashboard:users' %}">Clear</a>{% endif %}
+    </div>
+    {% if edit_user %}
+      <form method="post" class="admin-form">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="save_user">
+        <input type="hidden" name="user_id" value="{{ edit_user.pk }}">
+        <div class="admin-form__split">
+          <label>First name {{ user_form.first_name }}</label>
+          <label>Last name {{ user_form.last_name }}</label>
+        </div>
+        <label>Email {{ user_form.email }}</label>
+        <label>Phone {{ user_form.phone_number }}</label>
+        <label>Role {{ user_form.role }}</label>
+        <div class="admin-checks admin-checks--stack">
+          <label>{{ user_form.is_active }} Active account</label>
+          <label>{{ user_form.is_staff }} Staff access</label>
+          <label>{{ user_form.is_active_customer }} Active customer</label>
+        </div>
+        <button class="btn btn-primary w-100" type="submit">Save user</button>
+      </form>
+    {% else %}
+      <p class="admin-empty">Select a user from the table to edit account status, role, and staff access.</p>
+    {% endif %}
+  </section>
+
+  <section class="admin-panel">
+    <div class="admin-panel__header">
+      <h2>{% if edit_role %}Edit role{% else %}Roles{% endif %}</h2>
+      {% if edit_role %}<a href="{% url 'dashboard:users' %}">Clear</a>{% endif %}
+    </div>
+    <form method="post" class="admin-form mb-3">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="save_role">
+      {% if edit_role %}<input type="hidden" name="role_id" value="{{ edit_role.pk }}">{% endif %}
+      <label>Name {{ role_form.name }}</label>
+      <label>Description {{ role_form.description }}</label>
+      <div class="admin-checks"><label>{{ role_form.is_active }} Active role</label></div>
+      <button class="btn btn-primary w-100" type="submit">Save role</button>
+    </form>
+    <div class="compact-list">
+      {% for role in roles %}
+        <div class="compact-list__row">
+          <span>{{ role.name }} <small>{{ role.user_count }} users</small></span>
+          <span class="admin-actions">
+            <a class="btn btn-outline-light btn-sm" href="{% url 'dashboard:users' %}?edit_role={{ role.pk }}">Edit</a>
+            <form method="post">
+              {% csrf_token %}
+              <input type="hidden" name="role_id" value="{{ role.pk }}">
+              <button class="btn btn-outline-light btn-sm" name="action" value="toggle_role" type="submit">{% if role.is_active %}Deactivate{% else %}Activate{% endif %}</button>
+            </form>
+          </span>
+        </div>
+      {% empty %}
+        <p class="admin-empty">No roles configured.</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+<section class="admin-panel">
+  <div class="admin-panel__header">
+    <h2>User accounts</h2>
+  </div>
+  <div class="table-responsive">
+    <table class="admin-table admin-table--middle">
+      <thead>
+        <tr><th>User</th><th>Role</th><th>Orders</th><th>Access</th><th>Joined</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+          <tr>
+            <td>
+              <strong>{{ user.get_username }}</strong>
+              <small>{{ user.email|default:"No email" }}</small>
+            </td>
+            <td>{{ user.role.name|default:"No role" }}</td>
+            <td>{{ user.order_count }}</td>
+            <td>
+              {% if user.is_active %}<span class="status-pill status-pill--approved">Active</span>{% else %}<span class="status-pill status-pill--rejected">Inactive</span>{% endif %}
+              {% if user.is_staff %}<span class="status-pill status-pill--featured">Staff</span>{% endif %}
+            </td>
+            <td>{{ user.date_joined|date:"M d, Y" }}</td>
+            <td>
+              <div class="admin-actions">
+                <a class="btn btn-outline-light btn-sm" href="{% url 'dashboard:users' %}?edit_user={{ user.pk }}">Edit</a>
+                <form method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="user_id" value="{{ user.pk }}">
+                  <button class="btn btn-outline-light btn-sm" name="action" value="toggle_user" type="submit">{% if user.is_active %}Deactivate{% else %}Activate{% endif %}</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="6">No users found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

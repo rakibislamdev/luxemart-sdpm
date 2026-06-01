@@ -1,0 +1,74 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Categories | Luxemart Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page-header">
+  <div>
+    <span class="admin-kicker">Catalog structure</span>
+    <h1>Categories</h1>
+    <p>Organize the storefront, control active collections, and protect categories with assigned products.</p>
+  </div>
+</div>
+
+<div class="admin-grid admin-grid--form-table">
+  <section class="admin-panel">
+    <div class="admin-panel__header">
+      <h2>{% if edit_category %}Edit category{% else %}Add category{% endif %}</h2>
+      {% if edit_category %}<a href="{% url 'dashboard:categories' %}">Clear</a>{% endif %}
+    </div>
+    <form method="post" class="admin-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="save">
+      {% if edit_category %}<input type="hidden" name="category_id" value="{{ edit_category.pk }}">{% endif %}
+      {{ form.non_field_errors }}
+      <label>Name {{ form.name }}</label>
+      <label>Slug {{ form.slug }}</label>
+      <label>Description {{ form.description }}</label>
+      <div class="admin-checks">
+        <label>{{ form.is_active }} Active category</label>
+      </div>
+      <button class="btn btn-primary w-100" type="submit">Save category</button>
+    </form>
+  </section>
+
+  <section class="admin-panel">
+    <div class="admin-panel__header">
+      <h2>Category list</h2>
+    </div>
+    <div class="table-responsive">
+      <table class="admin-table">
+        <thead>
+          <tr><th>Name</th><th>Slug</th><th>Products</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for category in categories %}
+            <tr>
+              <td><strong>{{ category.name }}</strong></td>
+              <td>{{ category.slug }}</td>
+              <td>{{ category.product_count }}</td>
+              <td>{% if category.is_active %}<span class="status-pill status-pill--approved">Active</span>{% else %}<span class="status-pill status-pill--rejected">Inactive</span>{% endif %}</td>
+              <td>
+                <div class="admin-actions">
+                  <a class="btn btn-outline-light btn-sm" href="{% url 'dashboard:categories' %}?edit={{ category.pk }}">Edit</a>
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="category_id" value="{{ category.pk }}">
+                    <button class="btn btn-outline-light btn-sm" name="action" value="toggle" type="submit">{% if category.is_active %}Deactivate{% else %}Activate{% endif %}</button>
+                  </form>
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="category_id" value="{{ category.pk }}">
+                    <button class="btn btn-danger btn-sm" name="action" value="delete" type="submit">Delete</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="5">No categories yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

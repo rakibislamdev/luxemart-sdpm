@@ -1,0 +1,105 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Reports | Luxemart Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page-header">
+  <div>
+    <span class="admin-kicker">Analytics</span>
+    <h1>Reports</h1>
+    <p>Track monthly revenue, category performance, top products, and operational queues.</p>
+  </div>
+</div>
+
+<div class="admin-stat-grid admin-stat-grid--small">
+  <article class="admin-stat-card">
+    <span>Total revenue</span>
+    <strong>৳{{ total_revenue|floatformat:2 }}</strong>
+    <small>Approved payments</small>
+  </article>
+  <article class="admin-stat-card">
+    <span>Average order value</span>
+    <strong>৳{{ average_order_value|floatformat:2 }}</strong>
+    <small>Across all orders</small>
+  </article>
+  <article class="admin-stat-card">
+    <span>Pending orders</span>
+    <strong>{{ conversion_queue.pending_orders }}</strong>
+    <small>Needs processing</small>
+  </article>
+  <article class="admin-stat-card">
+    <span>Pending payments</span>
+    <strong>{{ conversion_queue.pending_payments }}</strong>
+    <small>Needs verification</small>
+  </article>
+  <article class="admin-stat-card">
+    <span>Low stock</span>
+    <strong>{{ conversion_queue.low_stock }}</strong>
+    <small>Inventory risk</small>
+  </article>
+</div>
+
+<div class="admin-grid admin-grid--two">
+  <section class="admin-panel">
+    <div class="admin-panel__header"><h2>Monthly revenue</h2></div>
+    <div class="table-responsive">
+      <table class="admin-table">
+        <thead><tr><th>Month</th><th>Payments</th><th>Revenue</th></tr></thead>
+        <tbody>
+          {% for row in monthly_sales %}
+            <tr>
+              <td>{{ row.month|date:"F Y" }}</td>
+              <td>{{ row.payments }}</td>
+              <td>৳{{ row.total|floatformat:2 }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="3">No revenue yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="admin-panel">
+    <div class="admin-panel__header"><h2>Category performance</h2></div>
+    <div class="table-responsive">
+      <table class="admin-table">
+        <thead><tr><th>Category</th><th>Products</th><th>Units</th><th>Sales</th></tr></thead>
+        <tbody>
+          {% for row in category_performance %}
+            <tr>
+              <td>{{ row.product__category__name }}</td>
+              <td>{{ row.products }}</td>
+              <td>{{ row.units }}</td>
+              <td>৳{{ row.sales|floatformat:2 }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="4">No category sales yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<section class="admin-panel">
+  <div class="admin-panel__header"><h2>Product performance</h2></div>
+  <div class="table-responsive">
+    <table class="admin-table">
+      <thead><tr><th>Product</th><th>SKU</th><th>Units sold</th><th>Stock left</th><th>Sales</th></tr></thead>
+      <tbody>
+        {% for row in product_performance %}
+          <tr>
+            <td>{{ row.product__name }}</td>
+            <td>{{ row.product__sku }}</td>
+            <td>{{ row.units }}</td>
+            <td>{{ row.product__stock_quantity }}</td>
+            <td>৳{{ row.sales|floatformat:2 }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5">No product sales yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

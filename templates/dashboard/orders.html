@@ -1,0 +1,82 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Orders | Luxemart Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page-header">
+  <div>
+    <span class="admin-kicker">Order operations</span>
+    <h1>Orders</h1>
+    <p>Review purchases, inspect items, and move orders through fulfillment.</p>
+  </div>
+  <form class="admin-filter" method="get">
+    <select class="form-select form-select-sm" name="status">
+      <option value="">All statuses</option>
+      {% for value,label in status_choices %}
+        <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-outline-light btn-sm" type="submit">Filter</button>
+  </form>
+</div>
+
+<section class="admin-panel mb-3">
+  <div class="admin-panel__header"><h2>Status overview</h2></div>
+  <div class="admin-status-strip">
+    {% for item in status_breakdown %}
+      <div>
+        <strong>{{ item.count }}</strong>
+        <span>{{ item.label }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="admin-panel">
+  <div class="admin-panel__header">
+    <h2>All orders</h2>
+  </div>
+  <div class="table-responsive">
+    <table class="admin-table admin-table--middle">
+      <thead>
+        <tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Update</th></tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+          <tr>
+            <td>
+              <strong>#{{ order.pk }}</strong>
+              <small>{{ order.created_at|date:"M d, Y H:i" }}</small>
+            </td>
+            <td>{{ order.user.get_username }}<small>{{ order.user.email }}</small></td>
+            <td>
+              <div class="admin-item-stack">
+                {% for item in order.items.all %}
+                  <span>{{ item.product.name }} x {{ item.quantity }}</span>
+                {% empty %}
+                  <span>No items</span>
+                {% endfor %}
+              </div>
+            </td>
+            <td>৳{{ order.total_amount|floatformat:2 }}</td>
+            <td><span class="status-pill status-pill--{{ order.status }}">{{ order.get_status_display }}</span></td>
+            <td>
+              <form method="post" class="admin-inline-form">
+                {% csrf_token %}
+                <input type="hidden" name="order_id" value="{{ order.pk }}">
+                <select class="form-select form-select-sm" name="status">
+                  {% for value,label in status_choices %}
+                    <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+                <button class="btn btn-primary btn-sm" type="submit">Update</button>
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="6">No orders found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
