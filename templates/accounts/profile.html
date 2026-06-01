@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Profile | Luxemart{% endblock %}
+{% block content %}
+<div class="card luxe-card">
+  <div class="card-body">
+    <h1 class="h3">Profile</h1>
+    <p>{{ request.user.username }}</p>
+  </div>
+</div>
+{% endblock %}

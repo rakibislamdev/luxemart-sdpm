@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Products | Luxemart{% endblock %}
+{% block content %}
+<div class="hero-panel mb-4">
+  <h1 class="display-6 fw-bold mb-2">Featured Products</h1>
+  <p class="text-white-50 mb-0">Browse live catalog updates, stock levels, and product details.</p>
+</div>
+<div class="row g-4">
+  {% for product in products %}
+  <div class="col-md-4">
+    <div class="card luxe-card h-100">
+      <div class="card-body">
+        <h5 class="card-title">{{ product.name }}</h5>
+        <p class="card-text text-muted">{{ product.category.name }}</p>
+        <p class="fw-semibold">{{ product.price }}</p>
+        <a class="btn btn-dark" href="{% url 'catalog:product-detail' product.slug %}">View Details</a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12"><div class="alert alert-secondary">No active products yet.</div></div>
+  {% endfor %}
+</div>
+{% endblock %}
