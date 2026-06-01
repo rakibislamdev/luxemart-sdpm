@@ -4,52 +4,92 @@
 <section class="catalog-page">
   <div class="catalog-page__header mb-4">
     <div>
-      <h1>{{ selected_category|default:'Electronics'|title }}</h1>
-      <p>{{ total_products }} products found</p>
+      <h1>{% if search_query %}Search results{% elif selected_category %}{{ selected_category|title }}{% else %}All Products{% endif %}</h1>
+      <p>{{ total_products }} products found{% if search_query %} for "{{ search_query }}"{% endif %}</p>
     </div>
     <form class="catalog-sort" method="get">
+      {% if search_query %}
+        <input type="hidden" name="q" value="{{ search_query }}">
+      {% endif %}
       {% if selected_category %}
         <input type="hidden" name="category" value="{{ selected_category }}">
       {% endif %}
+      {% if price_range and price_range != 'all' %}
+        <input type="hidden" name="price" value="{{ price_range }}">
+      {% endif %}
+      {% if availability and availability != 'all' %}
+        <input type="hidden" name="availability" value="{{ availability }}">
+      {% endif %}
       <label for="sort">Sort by:</label>
-      <select name="sort" id="sort" onchange="this.form.submit()">
-        <option value="default" {% if sort == 'default' %}selected{% endif %}>Default</option>
+      <select class="form-select form-select-sm" name="sort" id="sort" onchange="this.form.submit()">
+        <option value="default" {% if sort == 'default' %}selected{% endif %}>Name</option>
         <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
         <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
         <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest</option>
+        <option value="stock" {% if sort == 'stock' %}selected{% endif %}>Stock Available</option>
       </select>
     </form>
   </div>
 
   <div class="catalog-layout">
     <aside class="catalog-sidebar">
+      <form class="catalog-filter-form" method="get">
       <div class="sidebar-group">
         <h2>Search</h2>
-        <input type="search" placeholder="Search products..." aria-label="Search products">
+        <input class="form-control" type="search" name="q" value="{{ search_query }}" placeholder="Search products..." aria-label="Search products">
       </div>
 
       <div class="sidebar-group">
         <h2>Category</h2>
-        <a class="sidebar-link {% if not selected_category %}is-active{% endif %}" href="{% url 'catalog:product-list' %}">All Categories</a>
+        <label class="sidebar-option {% if not selected_category %}is-active{% endif %}">
+          <input type="radio" name="category" value="" {% if not selected_category %}checked{% endif %}>
+          <span>All Categories</span>
+        </label>
         {% for category in categories %}
-          <a class="sidebar-link {% if selected_category == category.slug %}is-active{% endif %}" href="?category={{ category.slug }}">
+          <label class="sidebar-option {% if selected_category == category.slug %}is-active{% endif %}">
+            <input type="radio" name="category" value="{{ category.slug }}" {% if selected_category == category.slug %}checked{% endif %}>
             <span>{{ category.name }}</span>
             <small>{{ category.product_count }} products</small>
-          </a>
+          </label>
         {% endfor %}
       </div>
 
       <div class="sidebar-group">
         <h2>Price Range</h2>
-        <a href="?price=all" class="sidebar-link is-active">All Prices</a>
-        <a href="?price=under-50" class="sidebar-link">Under $50</a>
-        <a href="?price=50-100" class="sidebar-link">$50 - $100</a>
-        <a href="?price=100-250" class="sidebar-link">$100 - $250</a>
-        <a href="?price=250-500" class="sidebar-link">$250 - $500</a>
-        <a href="?price=over-500" class="sidebar-link">Over $500</a>
+        {% for range in price_ranges %}
+          <label class="sidebar-option {% if price_range == range.value %}is-active{% endif %}">
+            <input type="radio" name="price" value="{{ range.value }}" {% if price_range == range.value %}checked{% endif %}>
+            <span>{{ range.label }}</span>
+          </label>
+        {% endfor %}
       </div>
 
-      <a class="sidebar-reset" href="{% url 'catalog:product-list' %}">Clear All Filters</a>
+      <div class="sidebar-group">
+        <h2>Availability</h2>
+        <label class="sidebar-option {% if availability == 'all' %}is-active{% endif %}">
+          <input type="radio" name="availability" value="all" {% if availability == 'all' %}checked{% endif %}>
+          <span>All stock states</span>
+        </label>
+        <label class="sidebar-option {% if availability == 'in_stock' %}is-active{% endif %}">
+          <input type="radio" name="availability" value="in_stock" {% if availability == 'in_stock' %}checked{% endif %}>
+          <span>In stock</span>
+        </label>
+        <label class="sidebar-option {% if availability == 'low_stock' %}is-active{% endif %}">
+          <input type="radio" name="availability" value="low_stock" {% if availability == 'low_stock' %}checked{% endif %}>
+          <span>Low stock</span>
+        </label>
+        <label class="sidebar-option {% if availability == 'out_of_stock' %}is-active{% endif %}">
+          <input type="radio" name="availability" value="out_of_stock" {% if availability == 'out_of_stock' %}checked{% endif %}>
+          <span>Out of stock</span>
+        </label>
+      </div>
+
+      <input type="hidden" name="sort" value="{{ sort }}">
+      <div class="catalog-filter-actions">
+        <button class="btn btn-primary w-100" type="submit">Apply Filters</button>
+        <a class="sidebar-reset" href="{% url 'catalog:product-list' %}">Clear All Filters</a>
+      </div>
+      </form>
     </aside>
 
     <div class="catalog-results">
@@ -73,7 +113,7 @@
             <p class="product-card__category">{{ product.category.name }}</p>
             <h3>{{ product.name }}</h3>
             <div class="product-card__meta">
-              <span class="price">${{ product.price }}</span>
+              <span class="price">৳{{ product.price }}</span>
               <span class="stock">{{ product.stock_quantity }} in stock</span>
             </div>
             <a class="btn btn-primary w-100" href="{% url 'catalog:product-detail' product.slug %}">View Details</a>

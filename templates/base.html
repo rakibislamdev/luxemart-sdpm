@@ -19,10 +19,9 @@
         <ul class="navbar-nav mx-lg-4 luxe-nav-links">
           <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'catalog:product-list' %}">Shop</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'dashboard:home' %}">Admin</a></li>
         </ul>
-        <form class="luxe-search mx-lg-auto my-3 my-lg-0" role="search">
-          <input type="search" class="form-control" placeholder="Search products..." aria-label="Search products">
+        <form class="luxe-search mx-lg-auto my-3 my-lg-0" action="{% url 'catalog:product-list' %}" method="get" role="search">
+          <input type="search" name="q" class="form-control" placeholder="Search products..." aria-label="Search products">
         </form>
         <div class="ms-lg-auto d-flex align-items-center gap-2">
           <a class="nav-link text-white-50 d-none d-lg-inline" href="{% url 'cart:detail' %}">Cart</a>

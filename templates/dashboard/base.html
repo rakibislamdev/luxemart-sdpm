@@ -14,6 +14,10 @@
         </a>
       {% endfor %}
     </nav>
+    <form class="admin-logout" method="post" action="{% url 'accounts:logout' %}">
+      {% csrf_token %}
+      <button class="admin-logout__button" type="submit">Logout</button>
+    </form>
   </aside>
 
   <section class="admin-main">

@@ -49,7 +49,7 @@
         <p class="product-card__category">{{ product.category.name }}</p>
         <h3>{{ product.name }}</h3>
         <div class="product-card__meta">
-          <span class="price">${{ product.price }}</span>
+          <span class="price">৳{{ product.price }}</span>
         </div>
         <a class="btn btn-primary w-100" href="{% url 'catalog:product-detail' product.slug %}">View Details</a>
       </div>
