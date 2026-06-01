@@ -9,6 +9,7 @@ Luxemart is a Django-based e-commerce management system with customer shopping f
 - Shared models for timestamps, categories, products, orders, payments, delivery, and notifications
 - Base templates and static assets for a bootstrap-driven UI
 - Channels-ready ASGI setup for future WebSocket support
+- File-based upload fields for avatars, product media, and payment proofs
 
 ## Setup
 
@@ -16,6 +17,8 @@ Luxemart is a Django-based e-commerce management system with customer shopping f
 2. Install dependencies from `requirements.txt`.
 3. Copy `.env.example` to `.env` and update the values.
 4. Run database migrations and start the development server.
+
+The project now uses PostgreSQL by default. Make sure `DATABASE_URL` in `.env` points to your local `luxemart` database before running migrations.
 
 ## Useful commands
 

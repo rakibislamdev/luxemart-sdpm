@@ -65,11 +65,10 @@ TEMPLATES = [
 ASGI_APPLICATION = "luxemart.asgi.application"
 WSGI_APPLICATION = "luxemart.wsgi.application"
 
+DEFAULT_DATABASE_URL = "postgres://postgres:password@localhost:5432/luxemart"
+
 DATABASES = {
-    "default": env.db(
-        "DATABASE_URL",
-        default="postgres://postgres:postgres@localhost:5432/luxemart",
-    )
+    "default": env.db("DATABASE_URL", default=DEFAULT_DATABASE_URL)
 }
 
 AUTH_PASSWORD_VALIDATORS = [
