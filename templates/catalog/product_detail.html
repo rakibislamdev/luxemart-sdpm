@@ -1,13 +1,113 @@
 {% extends 'base.html' %}
 {% block title %}{{ product.name }} | Luxemart{% endblock %}
 {% block content %}
-<div class="card luxe-card">
-  <div class="card-body">
-    <h1 class="h3">{{ product.name }}</h1>
-    <p class="text-muted mb-2">{{ product.category.name }}</p>
-    <p>{{ product.description }}</p>
-    <p class="fw-semibold">Price: {{ product.price }}</p>
-    <p>Stock: {{ product.stock_quantity }}</p>
+<section class="product-detail-page">
+  <nav class="product-breadcrumb mb-4">
+    <a href="/">Home</a>
+    <span>/</span>
+    <a href="{% url 'catalog:product-list' %}">Products</a>
+    <span>/</span>
+    <strong>{{ product.name }}</strong>
+  </nav>
+
+  <div class="product-detail-grid">
+    <div class="product-gallery">
+      {% if gallery_images %}
+        {% with gallery_images|first as primary_image %}
+          <div class="product-gallery__hero">
+            <img src="{{ primary_image.image.url }}" alt="{{ product.name }}">
+          </div>
+        {% endwith %}
+        <div class="product-gallery__thumbs">
+          {% for image in gallery_images %}
+            <div class="product-gallery__thumb">
+              <img src="{{ image.image.url }}" alt="{{ product.name }} thumbnail">
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="product-gallery__hero product-gallery__hero--empty">
+          <span>{{ product.name|slice:":1" }}</span>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="product-detail-card luxe-card">
+      <span class="detail-badge">Trending</span>
+      <p class="product-card__category mb-2">{{ product.category.name }}</p>
+      <h1>{{ product.name }}</h1>
+      <div class="detail-rating mb-3">
+        <span>★★★★☆</span>
+        <small>4.8 (2,450 reviews)</small>
+      </div>
+      <div class="detail-price mb-3">
+        <strong>${{ product.price }}</strong>
+        <span>Stock: {{ product.stock_quantity }}</span>
+      </div>
+      <p class="product-detail-card__description">{{ product.description|default:"Experience crystal-clear audio and a premium shopping presentation with this featured product." }}</p>
+
+      <div class="detail-features">
+        <h2>Key Features</h2>
+        <ul>
+          <li>High-quality product presentation</li>
+          <li>Real-time inventory ready</li>
+          <li>Designed for cart and checkout flows</li>
+          <li>Easy admin-managed pricing</li>
+        </ul>
+      </div>
+
+      <div class="detail-actions">
+        <div class="quantity-box">
+          <button type="button">-</button>
+          <input type="text" value="1" aria-label="Quantity">
+          <button type="button">+</button>
+        </div>
+        <a class="btn btn-primary btn-lg flex-grow-1" href="/cart/">Add to Cart</a>
+      </div>
+
+      <p class="detail-status">In Stock - Free shipping on orders over $50</p>
+    </div>
   </div>
-</div>
+
+  <section class="related-products mt-5">
+    <div class="section-heading section-heading--split">
+      <div>
+        <h2>You May Also Like</h2>
+      </div>
+    </div>
+    <div class="product-grid product-grid--related">
+      {% for item in related_products %}
+      <article class="product-card product-card--related">
+        <div class="product-card__media">
+          {% if item.images.all %}
+            {% with item.images.all|first as image %}
+              {% if image %}
+                <img src="{{ image.image.url }}" alt="{{ item.name }}">
+              {% else %}
+                <div class="product-card__fallback">{{ item.name|slice:":1" }}</div>
+              {% endif %}
+            {% endwith %}
+          {% else %}
+            <div class="product-card__fallback">{{ item.name|slice:":1" }}</div>
+          {% endif %}
+        </div>
+        <div class="product-card__body">
+          <p class="product-card__category">{{ item.category.name }}</p>
+          <h3>{{ item.name }}</h3>
+          <div class="product-card__meta">
+            <span class="price">${{ item.price }}</span>
+            <span class="stock">{{ item.stock_quantity }} in stock</span>
+          </div>
+          <a class="btn btn-primary w-100" href="{% url 'catalog:product-detail' item.slug %}">View Details</a>
+        </div>
+      </article>
+      {% empty %}
+      <div class="empty-state">
+        <h3>No related products yet</h3>
+        <p>Add more items in the same category to populate this section.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+</section>
 {% endblock %}

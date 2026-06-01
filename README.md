@@ -26,3 +26,9 @@ The project now uses PostgreSQL by default. Make sure `DATABASE_URL` in `.env` p
 - `python manage.py makemigrations`
 - `python manage.py migrate`
 - `python manage.py runserver`
+
+
+## Admin credentials
+email: admin@luxemart.com
+password: Luxe@10018
+username: luxemart

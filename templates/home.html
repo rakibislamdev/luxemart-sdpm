@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Home | Luxemart{% endblock %}
+{% block content %}
+<section class="hero-shell mb-5">
+  <div class="hero-copy">
+    <span class="eyebrow">New season collection 2026</span>
+    <h1>Discover Premium <span>Lifestyle Products</span></h1>
+    <p>
+      Curated collections, real-time stock visibility, and a polished shopping flow designed for fast browsing.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-light btn-lg" href="{% url 'catalog:product-list' %}">Shop Now</a>
+      <a class="btn btn-outline-light btn-lg" href="{% url 'catalog:product-list' %}">Explore Collections</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="floating-card floating-card--top">
+      <span>Live inventory</span>
+      <strong>Real-time updates</strong>
+    </div>
+    <div class="floating-card floating-card--bottom">
+      <span>Fast checkout</span>
+      <strong>Secure payment flow</strong>
+    </div>
+  </div>
+</section>
+
+<section class="content-section mb-5" id="featured-products">
+  <div class="section-heading section-heading--split">
+    <div>
+      <h2>Featured Products</h2>
+      <p>Handpicked favorites just for you.</p>
+    </div>
+    <a class="section-link" href="{% url 'catalog:product-list' %}">View All</a>
+  </div>
+  <div class="product-grid">
+    {% for product in featured %}
+    <article class="product-card">
+      <div class="product-card__media">
+        {% with product.images.all|first as image %}
+          {% if image %}
+            <img src="{{ image.image.url }}" alt="{{ product.name }}">
+          {% else %}
+            <div class="product-card__fallback">{{ product.name|slice:":1" }}</div>
+          {% endif %}
+        {% endwith %}
+      </div>
+      <div class="product-card__body">
+        <p class="product-card__category">{{ product.category.name }}</p>
+        <h3>{{ product.name }}</h3>
+        <div class="product-card__meta">
+          <span class="price">${{ product.price }}</span>
+        </div>
+        <a class="btn btn-primary w-100" href="{% url 'catalog:product-detail' product.slug %}">View Details</a>
+      </div>
+    </article>
+    {% empty %}
+    <div class="empty-state">
+      <h3>No featured products</h3>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

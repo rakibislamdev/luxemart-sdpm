@@ -1,24 +1,92 @@
 {% extends 'base.html' %}
 {% block title %}Products | Luxemart{% endblock %}
 {% block content %}
-<div class="hero-panel mb-4">
-  <h1 class="display-6 fw-bold mb-2">Featured Products</h1>
-  <p class="text-white-50 mb-0">Browse live catalog updates, stock levels, and product details.</p>
-</div>
-<div class="row g-4">
-  {% for product in products %}
-  <div class="col-md-4">
-    <div class="card luxe-card h-100">
-      <div class="card-body">
-        <h5 class="card-title">{{ product.name }}</h5>
-        <p class="card-text text-muted">{{ product.category.name }}</p>
-        <p class="fw-semibold">{{ product.price }}</p>
-        <a class="btn btn-dark" href="{% url 'catalog:product-detail' product.slug %}">View Details</a>
+<section class="catalog-page">
+  <div class="catalog-page__header mb-4">
+    <div>
+      <h1>{{ selected_category|default:'Electronics'|title }}</h1>
+      <p>{{ total_products }} products found</p>
+    </div>
+    <form class="catalog-sort" method="get">
+      {% if selected_category %}
+        <input type="hidden" name="category" value="{{ selected_category }}">
+      {% endif %}
+      <label for="sort">Sort by:</label>
+      <select name="sort" id="sort" onchange="this.form.submit()">
+        <option value="default" {% if sort == 'default' %}selected{% endif %}>Default</option>
+        <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+        <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+        <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest</option>
+      </select>
+    </form>
+  </div>
+
+  <div class="catalog-layout">
+    <aside class="catalog-sidebar">
+      <div class="sidebar-group">
+        <h2>Search</h2>
+        <input type="search" placeholder="Search products..." aria-label="Search products">
+      </div>
+
+      <div class="sidebar-group">
+        <h2>Category</h2>
+        <a class="sidebar-link {% if not selected_category %}is-active{% endif %}" href="{% url 'catalog:product-list' %}">All Categories</a>
+        {% for category in categories %}
+          <a class="sidebar-link {% if selected_category == category.slug %}is-active{% endif %}" href="?category={{ category.slug }}">
+            <span>{{ category.name }}</span>
+            <small>{{ category.product_count }} products</small>
+          </a>
+        {% endfor %}
+      </div>
+
+      <div class="sidebar-group">
+        <h2>Price Range</h2>
+        <a href="?price=all" class="sidebar-link is-active">All Prices</a>
+        <a href="?price=under-50" class="sidebar-link">Under $50</a>
+        <a href="?price=50-100" class="sidebar-link">$50 - $100</a>
+        <a href="?price=100-250" class="sidebar-link">$100 - $250</a>
+        <a href="?price=250-500" class="sidebar-link">$250 - $500</a>
+        <a href="?price=over-500" class="sidebar-link">Over $500</a>
+      </div>
+
+      <a class="sidebar-reset" href="{% url 'catalog:product-list' %}">Clear All Filters</a>
+    </aside>
+
+    <div class="catalog-results">
+      <div class="product-grid product-grid--catalog">
+        {% for product in products %}
+        <article class="product-card product-card--catalog">
+          <div class="product-card__media">
+            {% if product.images.all %}
+              {% with product.images.all|first as image %}
+                {% if image %}
+                  <img src="{{ image.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                  <div class="product-card__fallback">{{ product.name|slice:":1" }}</div>
+                {% endif %}
+              {% endwith %}
+            {% else %}
+              <div class="product-card__fallback">{{ product.name|slice:":1" }}</div>
+            {% endif %}
+          </div>
+          <div class="product-card__body">
+            <p class="product-card__category">{{ product.category.name }}</p>
+            <h3>{{ product.name }}</h3>
+            <div class="product-card__meta">
+              <span class="price">${{ product.price }}</span>
+              <span class="stock">{{ product.stock_quantity }} in stock</span>
+            </div>
+            <a class="btn btn-primary w-100" href="{% url 'catalog:product-detail' product.slug %}">View Details</a>
+          </div>
+        </article>
+        {% empty %}
+        <div class="empty-state">
+          <h3>No products yet</h3>
+          <p>Add categories and products in the admin panel to populate this storefront.</p>
+        </div>
+        {% endfor %}
       </div>
     </div>
   </div>
-  {% empty %}
-  <div class="col-12"><div class="alert alert-secondary">No active products yet.</div></div>
-  {% endfor %}
-</div>
+</section>
 {% endblock %}
