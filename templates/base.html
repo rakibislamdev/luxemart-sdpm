@@ -67,24 +67,27 @@
           </div>
           <div class="col-6 col-lg-2">
             <h6>Shop</h6>
-            <a href="#categories">Categories</a>
-            <a href="#featured-products">Featured</a>
-            <a href="/cart/">Cart</a>
+            <a href="{% url 'catalog:product-list' %}">All Products</a>
+            <a href="{% url 'home' %}#categories">Categories</a>
+            <a href="{% url 'cart:detail' %}">My Cart</a>
           </div>
           <div class="col-6 col-lg-2">
             <h6>Account</h6>
-            <a href="/accounts/profile/">Profile</a>
-            <a href="/orders/">Orders</a>
-            <a href="/notifications/">Alerts</a>
+            <a href="{% url 'accounts:profile' %}">My Profile</a>
+            <a href="{% url 'orders:history' %}">Order History</a>
           </div>
           <div class="col-6 col-lg-2">
-            <h6>Company</h6>
-            <a href="/dashboard/">Dashboard</a>
+            <h6>Legal</h6>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
           </div>
           <div class="col-6 col-lg-2">
             <h6>Support</h6>
             <a href="#">Help Center</a>
-            <a href="#">Contact Us</a>
+            {% if user.is_staff %}
+              <hr class="my-2 border-secondary opacity-25">
+              <a href="{% url 'management:home' %}" class="text-primary fw-bold">Admin Portal</a>
+            {% endif %}
           </div>
         </div>
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-4 pt-3 luxe-footer__bottom">
