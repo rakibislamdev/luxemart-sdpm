@@ -79,12 +79,24 @@ def product_list(request):
 
 
 def home(request):
-    # simple homepage: show featured products and categories
-    featured = (
-        Product.objects.select_related("category").prefetch_related("images").filter(is_active=True, featured=True)[:6]
-    )
+    # premium homepage: show featured, trending and new arrivals
     categories = Category.objects.filter(is_active=True).annotate(product_count=Count("products")).order_by("name")
-    return render(request, "home.html", {"featured": featured, "categories": categories})
+    featured = (
+        Product.objects.select_related("category").prefetch_related("images").filter(is_active=True, featured=True)[:4]
+    )
+    trending = (
+        Product.objects.select_related("category").prefetch_related("images").filter(is_active=True).order_by("-stock_quantity")[:8]
+    )
+    new_arrivals = (
+        Product.objects.select_related("category").prefetch_related("images").filter(is_active=True).order_by("-created_at")[:4]
+    )
+    
+    return render(request, "home.html", {
+        "featured": featured,
+        "categories": categories,
+        "trending": trending,
+        "new_arrivals": new_arrivals,
+    })
 
 
 def product_detail(request, slug):

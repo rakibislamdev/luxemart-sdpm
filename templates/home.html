@@ -1,58 +1,221 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Home | Luxemart{% endblock %}
+
 {% block content %}
-<section class="hero-shell mb-5">
-  <div class="hero-copy">
-    <span class="eyebrow">New season collection 2026</span>
-    <h1>Discover Premium <span>Lifestyle Products</span></h1>
-    <p>
-      Curated collections, real-time stock visibility, and a polished shopping flow designed for fast browsing.
-    </p>
-    <div class="hero-actions">
-      <a class="btn btn-light btn-lg" href="{% url 'catalog:product-list' %}">Shop Now</a>
-      <a class="btn btn-outline-light btn-lg" href="{% url 'catalog:product-list' %}">Explore Collections</a>
-    </div>
-  </div>
-  <div class="hero-visual">
-    <div class="floating-card floating-card--top">
-      <span>Live inventory</span>
-      <strong>Real-time updates</strong>
-    </div>
-    <div class="floating-card floating-card--bottom">
-      <span>Fast checkout</span>
-      <strong>Secure payment flow</strong>
+<!-- Hero Section -->
+<section class="hero-premium mb-5">
+  <div class="hero-inner">
+    <div class="hero-content">
+      <span class="badge bg-warning text-dark mb-3">✨ New Season Collection 2026</span>
+      <h1 class="display-3 fw-bold mb-3">Discover Premium <br><span class="text-warning">Lifestyle Products</span></h1>
+      <p class="lead text-white-50 mb-4" style="max-width: 600px;">Curated collections of premium products designed to elevate your everyday experience. Quality meets style.</p>
+      <div class="d-flex gap-3">
+        <a href="{% url 'catalog:product-list' %}" class="btn btn-primary btn-lg px-5 py-3 fw-bold">Shop Now &rarr;</a>
+        <a href="#categories" class="btn btn-outline-light btn-lg px-5 py-3">Explore Collections</a>
+      </div>
+      
+      <div class="hero-stats mt-5 pt-4 d-flex gap-5 border-top border-white border-opacity-10">
+        <div>
+          <h3 class="fw-bold mb-0">20K+</h3>
+          <small class="text-white-50">Happy Customers</small>
+        </div>
+        <div>
+          <h3 class="fw-bold mb-0">500+</h3>
+          <small class="text-white-50">Premium Products</small>
+        </div>
+        <div>
+          <h3 class="fw-bold mb-0">99%</h3>
+          <small class="text-white-50">Satisfaction Rate</small>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="content-section mb-5" id="featured-products">
-  <div class="section-heading section-heading--split">
-    <div>
-      <h2>Featured Products</h2>
-      <p>Handpicked favorites just for you.</p>
-    </div>
-    <a class="section-link" href="{% url 'catalog:product-list' %}">View All</a>
+<!-- Categories Section -->
+<section id="categories" class="mb-5 pb-5">
+  <div class="section-heading text-center mb-5">
+    <h2 class="h1 fw-bold">Shop by Category</h2>
+    <p class="text-muted">Find exactly what you're looking for</p>
   </div>
-  <div class="product-grid">
-    {% for product in featured %}
-    <article class="product-card">
-      <div class="product-card__media">
-        <img src="{{ product.get_primary_image_url }}" alt="{{ product.name }}">
+  <div class="row g-4 justify-content-center">
+    {% for category in categories %}
+      <div class="col-6 col-md-4 col-lg-2">
+        <a href="{% url 'catalog:product-list' %}?category={{ category.slug }}" class="category-card text-decoration-none">
+          <div class="category-card__image luxe-card">
+            {% if category.slug == 'electronics' %}💻{% elif category.slug == 'fashion' %}👗{% elif category.slug == 'beauty' %}💄{% elif category.slug == 'home-living' %}🏠{% elif category.slug == 'sports' %}🏃{% else %}📦{% endif %}
+          </div>
+          <div class="mt-3 text-center">
+            <h5 class="mb-1 text-white">{{ category.name }}</h5>
+            <small class="text-muted">{{ category.product_count }} Products</small>
+          </div>
+        </a>
       </div>
-      <div class="product-card__body">
-        <p class="product-card__category">{{ product.category.name }}</p>
-        <h3>{{ product.name }}</h3>
-        <div class="product-card__meta">
-          <span class="price">৳{{ product.price }}</span>
-        </div>
-        <a class="btn btn-primary w-100" href="{% url 'catalog:product-detail' product.slug %}">View Details</a>
-      </div>
-    </article>
-    {% empty %}
-    <div class="empty-state">
-      <h3>No featured products</h3>
-    </div>
     {% endfor %}
   </div>
 </section>
+
+<!-- Featured Products -->
+<section class="mb-5 pb-5">
+  <div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+      <h2 class="h1 fw-bold">Featured Products</h2>
+      <p class="text-muted">Handpicked favorites just for you</p>
+    </div>
+    <a href="{% url 'catalog:product-list' %}?featured=true" class="text-primary text-decoration-none fw-bold mb-3">View All &rarr;</a>
+  </div>
+  <div class="row g-4">
+    {% for product in featured %}
+      <div class="col-md-3">
+        <article class="product-card">
+          <div class="product-card__media position-relative">
+            <span class="badge bg-danger position-absolute top-0 end-0 m-3">-25%</span>
+            <img src="{{ product.get_primary_image_url }}" alt="{{ product.name }}">
+          </div>
+          <div class="product-card__body">
+            <p class="product-card__category text-uppercase small">{{ product.category.name }}</p>
+            <h3 class="h5">{{ product.name }}</h3>
+            <div class="mb-2 text-warning small">★★★★☆ <span class="text-muted">(1,245)</span></div>
+            <div class="product-card__meta">
+              <span class="price h5 fw-bold">৳{{ product.price }}</span>
+              <span class="text-decoration-line-through text-muted small ms-2">৳{{ product.price|add:500 }}</span>
+            </div>
+            <a href="{% url 'catalog:product-detail' product.slug %}" class="btn btn-primary w-100 mt-3">View Details</a>
+          </div>
+        </article>
+      </div>
+    {% empty %}
+      <div class="col-12 text-center py-5 luxe-card">
+        <p class="text-muted">No featured products at the moment.</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Promotional Banner -->
+<section class="mb-5 pb-5">
+  <div class="luxe-card p-5 promo-banner overflow-hidden position-relative">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <span class="badge bg-primary mb-3">Limited Time Offer</span>
+        <h2 class="display-4 fw-bold mb-3">Up to 40% Off Premium <br>Collection</h2>
+        <p class="text-white-50 mb-4">Don't miss out on our biggest sale of the season. Premium products at unbeatable prices.</p>
+        <a href="{% url 'catalog:product-list' %}" class="btn btn-warning btn-lg px-5 fw-bold">Shop the Sale</a>
+      </div>
+    </div>
+    <!-- Abstract decorative circle -->
+    <div class="promo-circle"></div>
+  </div>
+</section>
+
+<!-- Trending Now -->
+<section class="mb-5 pb-5">
+  <div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+      <h2 class="h1 fw-bold">Trending Now</h2>
+      <p class="text-muted">What everyone's talking about</p>
+    </div>
+    <a href="{% url 'catalog:product-list' %}" class="text-primary text-decoration-none fw-bold mb-3">View All &rarr;</a>
+  </div>
+  <div class="row g-4">
+    {% for product in trending %}
+      <div class="col-md-3">
+        <article class="product-card">
+          <div class="product-card__media position-relative">
+            {% if forloop.counter|divisibleby:3 %}<span class="badge bg-info position-absolute top-0 start-0 m-3">NEW</span>{% endif %}
+            <img src="{{ product.get_primary_image_url }}" alt="{{ product.name }}">
+          </div>
+          <div class="product-card__body">
+            <p class="product-card__category text-uppercase small">{{ product.category.name }}</p>
+            <h3 class="h5">{{ product.name }}</h3>
+            <div class="mb-2 text-warning small">★★★★☆ <span class="text-muted">(842)</span></div>
+            <div class="product-card__meta">
+              <span class="price h5 fw-bold">৳{{ product.price }}</span>
+            </div>
+            <a href="{% url 'catalog:product-detail' product.slug %}" class="btn btn-primary w-100 mt-3">View Details</a>
+          </div>
+        </article>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Trust Features -->
+<section class="mb-5 py-5 border-top border-bottom border-white border-opacity-10">
+  <div class="row g-4 text-center">
+    <div class="col-md-3">
+      <div class="h1 mb-3">🚚</div>
+      <h5 class="fw-bold">Free Shipping</h5>
+      <p class="small text-muted">On orders over ৳5,000</p>
+    </div>
+    <div class="col-md-3">
+      <div class="h1 mb-3">🔄</div>
+      <h5 class="fw-bold">Easy Returns</h5>
+      <p class="small text-muted">30-day return policy</p>
+    </div>
+    <div class="col-md-3">
+      <div class="h1 mb-3">🔒</div>
+      <h5 class="fw-bold">Secure Payment</h5>
+      <p class="small text-muted">100% secure checkout</p>
+    </div>
+    <div class="col-md-3">
+      <div class="h1 mb-3">💬</div>
+      <h5 class="fw-bold">24/7 Support</h5>
+      <p class="small text-muted">Dedicated help center</p>
+    </div>
+  </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="text-center py-5">
+  <h2 class="display-5 fw-bold mb-3">Stay in the Loop</h2>
+  <p class="text-muted mb-5">Subscribe for exclusive deals, new arrivals, and insider updates.</p>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <form class="d-flex gap-2">
+        <input type="email" class="form-control form-control-lg bg-dark border-secondary" placeholder="Your email address">
+        <button type="button" class="btn btn-primary btn-lg px-4">Subscribe</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .hero-premium {
+    padding: 100px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .category-card__image {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    transition: transform 0.3s ease;
+  }
+  .category-card:hover .category-card__image {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+  .promo-banner {
+    background: linear-gradient(135deg, #161d3a 0%, #0a0f26 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .promo-circle {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(77, 99, 255, 0.1) 0%, transparent 70%);
+    top: -300px;
+    right: -200px;
+    border-radius: 50%;
+  }
+  .hero-stats h3 {
+    color: var(--luxe-amber);
+  }
+</style>
 {% endblock %}
