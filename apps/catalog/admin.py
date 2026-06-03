@@ -55,3 +55,8 @@ class ProductImageAdmin(admin.ModelAdmin):
         return "No image"
 
     image_preview.short_description = "Preview"
+
+
+admin.site.site_header = "Luxemart Admin"
+admin.site.site_title = "Luxemart Portal"
+admin.site.index_title = "Welcome to Luxemart Management"
