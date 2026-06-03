@@ -29,10 +29,21 @@ class Product(TimeStampedModel):
     def __str__(self):
         return self.name
 
+    @property
+    def get_primary_image_url(self):
+        primary_image = self.images.filter(is_primary=True).first()
+        if not primary_image:
+            primary_image = self.images.first()
+        
+        if primary_image and primary_image.image:
+            return primary_image.image.url
+        from django.templatetags.static import static
+        return static("images/placeholder.svg")
+
 
 class ProductImage(TimeStampedModel):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images")
-    image = models.FileField(upload_to="products/")
+    image = models.ImageField(upload_to="products/")
     alt_text = models.CharField(max_length=200, blank=True)
     is_primary = models.BooleanField(default=False)
 

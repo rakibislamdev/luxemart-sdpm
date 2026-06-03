@@ -26,8 +26,8 @@
           {% endfor %}
         </div>
       {% else %}
-        <div class="product-gallery__hero product-gallery__hero--empty">
-          <span>{{ product.name|slice:":1" }}</span>
+        <div class="product-gallery__hero">
+          <img src="{{ product.get_primary_image_url }}" alt="{{ product.name }}">
         </div>
       {% endif %}
     </div>
@@ -79,18 +79,9 @@
       {% for item in related_products %}
       <article class="product-card product-card--related">
         <div class="product-card__media">
-          {% if item.images.all %}
-            {% with item.images.all|first as image %}
-              {% if image %}
-                <img src="{{ image.image.url }}" alt="{{ item.name }}">
-              {% else %}
-                <div class="product-card__fallback">{{ item.name|slice:":1" }}</div>
-              {% endif %}
-            {% endwith %}
-          {% else %}
-            <div class="product-card__fallback">{{ item.name|slice:":1" }}</div>
-          {% endif %}
+          <img src="{{ item.get_primary_image_url }}" alt="{{ item.name }}">
         </div>
+
         <div class="product-card__body">
           <p class="product-card__category">{{ item.category.name }}</p>
           <h3>{{ item.name }}</h3>

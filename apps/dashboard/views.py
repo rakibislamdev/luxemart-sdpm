@@ -176,12 +176,13 @@ def products(request):
                 saved_product.save()
                 image = request.FILES.get("image")
                 if image:
-                    is_primary = not saved_product.images.exists()
+                    # Make new upload the primary image and unset others
+                    saved_product.images.filter(is_primary=True).update(is_primary=False)
                     ProductImage.objects.create(
                         product=saved_product,
                         image=image,
                         alt_text=saved_product.name,
-                        is_primary=is_primary,
+                        is_primary=True,
                     )
                 messages.success(request, "Product saved.")
                 return redirect("dashboard:products")

@@ -37,13 +37,7 @@
     {% for product in featured %}
     <article class="product-card">
       <div class="product-card__media">
-        {% with product.images.all|first as image %}
-          {% if image %}
-            <img src="{{ image.image.url }}" alt="{{ product.name }}">
-          {% else %}
-            <div class="product-card__fallback">{{ product.name|slice:":1" }}</div>
-          {% endif %}
-        {% endwith %}
+        <img src="{{ product.get_primary_image_url }}" alt="{{ product.name }}">
       </div>
       <div class="product-card__body">
         <p class="product-card__category">{{ product.category.name }}</p>
