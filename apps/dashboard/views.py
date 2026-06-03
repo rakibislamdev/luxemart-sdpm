@@ -50,14 +50,14 @@ def admin_context(active):
     return {
         "active_admin_section": active,
         "admin_nav": [
-            {"label": "Dashboard", "url_name": "dashboard:home", "key": "home"},
-            {"label": "Products", "url_name": "dashboard:products", "key": "products"},
-            {"label": "Categories", "url_name": "dashboard:categories", "key": "categories"},
-            {"label": "Orders", "url_name": "dashboard:orders", "key": "orders"},
-            {"label": "Payments", "url_name": "dashboard:payments", "key": "payments"},
-            {"label": "Deliveries", "url_name": "dashboard:deliveries", "key": "deliveries"},
-            {"label": "Users & Roles", "url_name": "dashboard:users", "key": "users"},
-            {"label": "Reports", "url_name": "dashboard:reports", "key": "reports"},
+            {"label": "Dashboard", "url_name": "management:home", "key": "home"},
+            {"label": "Products", "url_name": "management:products", "key": "products"},
+            {"label": "Categories", "url_name": "management:categories", "key": "categories"},
+            {"label": "Orders", "url_name": "management:orders", "key": "orders"},
+            {"label": "Payments", "url_name": "management:payments", "key": "payments"},
+            {"label": "Deliveries", "url_name": "management:deliveries", "key": "deliveries"},
+            {"label": "Users & Roles", "url_name": "management:users", "key": "users"},
+            {"label": "Reports", "url_name": "management:reports", "key": "reports"},
             {"label": "Django Admin", "url_name": "admin:index", "key": "django-admin"},
         ],
     }
@@ -129,20 +129,20 @@ def categories(request):
             if form.is_valid():
                 form.save()
                 messages.success(request, "Category saved.")
-                return redirect("dashboard:categories")
+                return redirect("management:categories")
             edit_category = category
         elif action == "toggle" and category:
             category.is_active = not category.is_active
             category.save(update_fields=["is_active", "updated_at"])
             messages.success(request, "Category status updated.")
-            return redirect("dashboard:categories")
+            return redirect("management:categories")
         elif action == "delete" and category:
             try:
                 category.delete()
                 messages.success(request, "Category deleted.")
             except ProtectedError:
                 messages.error(request, "This category has products, so deactivate it instead of deleting it.")
-            return redirect("dashboard:categories")
+            return redirect("management:categories")
 
     category_list = Category.objects.annotate(product_count=Count("products")).order_by("name")
     return render(
@@ -185,25 +185,25 @@ def products(request):
                         is_primary=True,
                     )
                 messages.success(request, "Product saved.")
-                return redirect("dashboard:products")
+                return redirect("management:products")
             edit_product = product
         elif action == "toggle_active" and product:
             product.is_active = not product.is_active
             product.save(update_fields=["is_active", "updated_at"])
             messages.success(request, "Product availability updated.")
-            return redirect("dashboard:products")
+            return redirect("management:products")
         elif action == "toggle_featured" and product:
             product.featured = not product.featured
             product.save(update_fields=["featured", "updated_at"])
             messages.success(request, "Featured status updated.")
-            return redirect("dashboard:products")
+            return redirect("management:products")
         elif action == "delete" and product:
             try:
                 product.delete()
                 messages.success(request, "Product deleted.")
             except ProtectedError:
                 messages.error(request, "This product is tied to orders, so deactivate it instead of deleting it.")
-            return redirect("dashboard:products")
+            return redirect("management:products")
 
     search = request.GET.get("q", "").strip()
     stock_filter = request.GET.get("stock", "")
@@ -260,7 +260,7 @@ def users(request):
                     managed_user.is_active = True
                 managed_user.save()
                 messages.success(request, "User access updated.")
-                return redirect("dashboard:users")
+                return redirect("management:users")
             edit_user = user
         elif action == "toggle_user":
             user = get_object_or_404(User, pk=request.POST["user_id"])
@@ -270,21 +270,21 @@ def users(request):
                 user.is_active = not user.is_active
                 user.save(update_fields=["is_active"])
                 messages.success(request, "User status updated.")
-            return redirect("dashboard:users")
+            return redirect("management:users")
         elif action == "save_role":
             role = Role.objects.filter(pk=request.POST.get("role_id")).first()
             role_form = RoleForm(request.POST, instance=role)
             if role_form.is_valid():
                 role_form.save()
                 messages.success(request, "Role saved.")
-                return redirect("dashboard:users")
+                return redirect("management:users")
             edit_role = role
         elif action == "toggle_role":
             role = get_object_or_404(Role, pk=request.POST["role_id"])
             role.is_active = not role.is_active
             role.save(update_fields=["is_active", "updated_at"])
             messages.success(request, "Role status updated.")
-            return redirect("dashboard:users")
+            return redirect("management:users")
 
     user_list = User.objects.select_related("role").annotate(order_count=Count("orders")).order_by("-date_joined")
     roles = Role.objects.annotate(user_count=Count("user")).order_by("name")
@@ -314,7 +314,7 @@ def orders(request):
             messages.success(request, f"Order #{order.pk} status updated.")
         else:
             messages.error(request, "Could not update order status.")
-        return redirect("dashboard:orders")
+        return redirect("management:orders")
 
     status_filter = request.GET.get("status", "")
     order_list = Order.objects.select_related("user").prefetch_related("items__product").order_by("-created_at")
@@ -344,7 +344,7 @@ def payments(request):
             messages.success(request, f"Payment {payment.transaction_id} updated.")
         else:
             messages.error(request, "Could not update payment.")
-        return redirect("dashboard:payments")
+        return redirect("management:payments")
 
     status_filter = request.GET.get("status", "")
     payment_list = Payment.objects.select_related("user", "order").prefetch_related("proofs").order_by("-created_at")
@@ -379,7 +379,7 @@ def deliveries(request):
             messages.success(request, f"Delivery for order #{delivery.order_id} updated.")
         else:
             messages.error(request, "Could not update delivery.")
-        return redirect("dashboard:deliveries")
+        return redirect("management:deliveries")
 
     missing_delivery_orders = Order.objects.filter(delivery_information__isnull=True).exclude(status=Order.Status.CANCELLED)
     for order in missing_delivery_orders:

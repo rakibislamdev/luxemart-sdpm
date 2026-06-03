@@ -9,8 +9,8 @@
     <p>Revenue, orders, stock, users, and payment queues in one staff workspace.</p>
   </div>
   <div class="admin-header-actions">
-    <a class="btn btn-outline-light btn-sm" href="{% url 'dashboard:reports' %}">View reports</a>
-    <a class="btn btn-primary btn-sm" href="{% url 'dashboard:products' %}">Manage products</a>
+    <a class="btn btn-outline-light btn-sm" href="{% url 'management:reports' %}">View reports</a>
+    <a class="btn btn-primary btn-sm" href="{% url 'management:products' %}">Manage products</a>
   </div>
 </div>
 
@@ -51,7 +51,7 @@
   <section class="admin-panel">
     <div class="admin-panel__header">
       <h2>Order pipeline</h2>
-      <a href="{% url 'dashboard:orders' %}">Manage</a>
+      <a href="{% url 'management:orders' %}">Manage</a>
     </div>
     <div class="status-list">
       {% for item in order_statuses %}
@@ -69,7 +69,7 @@
   <section class="admin-panel">
     <div class="admin-panel__header">
       <h2>Payment verification</h2>
-      <a href="{% url 'dashboard:payments' %}">Review</a>
+      <a href="{% url 'management:payments' %}">Review</a>
     </div>
     <div class="status-list">
       {% for item in payment_statuses %}
@@ -89,7 +89,7 @@
   <section class="admin-panel">
     <div class="admin-panel__header">
       <h2>Monthly sales</h2>
-      <a href="{% url 'dashboard:reports' %}">Report</a>
+      <a href="{% url 'management:reports' %}">Report</a>
     </div>
     <div class="compact-list">
       {% for row in monthly_sales %}
@@ -106,7 +106,7 @@
   <section class="admin-panel">
     <div class="admin-panel__header">
       <h2>Top products</h2>
-      <a href="{% url 'dashboard:reports' %}">Analyze</a>
+      <a href="{% url 'management:reports' %}">Analyze</a>
     </div>
     <div class="compact-list">
       {% for product in top_products %}
@@ -123,7 +123,7 @@
   <section class="admin-panel">
     <div class="admin-panel__header">
       <h2>Low stock watch</h2>
-      <a href="{% url 'dashboard:products' %}?stock=low">Fix stock</a>
+      <a href="{% url 'management:products' %}?stock=low">Fix stock</a>
     </div>
     <div class="compact-list">
       {% for product in low_stock_products %}
@@ -142,7 +142,7 @@
   <section class="admin-panel">
     <div class="admin-panel__header">
       <h2>Recent orders</h2>
-      <a href="{% url 'dashboard:orders' %}">All orders</a>
+      <a href="{% url 'management:orders' %}">All orders</a>
     </div>
     <div class="table-responsive">
       <table class="admin-table">
@@ -166,7 +166,7 @@
   <section class="admin-panel">
     <div class="admin-panel__header">
       <h2>Recent payments</h2>
-      <a href="{% url 'dashboard:payments' %}">All payments</a>
+      <a href="{% url 'management:payments' %}">All payments</a>
     </div>
     <div class="table-responsive">
       <table class="admin-table">

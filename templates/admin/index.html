@@ -1,0 +1,21 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block content %}
+<div style="min-height: 60vh; display: flex; align-items: center; justify-content: center; text-align: center;">
+    <div class="luxe-card p-5" style="max-width: 600px;">
+        <h1 class="h2 mb-4">Management Access</h1>
+        <p class="mb-5 text-muted">You are currently in the technical database view. For the professional management dashboard with sales reports and order processing, please click below.</p>
+        <div class="d-grid gap-3">
+            <a href="{% url 'management:home' %}" class="btn btn-primary btn-lg">Go to Management Dashboard</a>
+            <p class="mt-4 small text-muted">Redirecting you automatically in 3 seconds...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    setTimeout(function() {
+        window.location.href = "{% url 'management:home' %}";
+    }, 3000);
+</script>
+{% endblock %}

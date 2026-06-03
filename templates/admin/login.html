@@ -112,7 +112,7 @@
             <div class="mb-4">
                 <label for="id_password" class="form-label">Password</label>
                 <input type="password" name="password" class="form-control" id="id_password" required placeholder="••••••••">
-                <input type="hidden" name="next" value="{{ next }}">
+                <input type="hidden" name="next" value="{% url 'management:home' %}">
             </div>
             
             <div class="d-grid">

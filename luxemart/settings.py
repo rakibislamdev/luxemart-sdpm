@@ -117,5 +117,5 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 LOGIN_URL = "accounts:login"
-LOGIN_REDIRECT_URL = "home"
+LOGIN_REDIRECT_URL = "accounts:login-router"
 LOGOUT_REDIRECT_URL = "home"

@@ -14,7 +14,7 @@
   <section class="admin-panel">
     <div class="admin-panel__header">
       <h2>{% if edit_user %}Edit user{% else %}User controls{% endif %}</h2>
-      {% if edit_user %}<a href="{% url 'dashboard:users' %}">Clear</a>{% endif %}
+      {% if edit_user %}<a href="{% url 'management:users' %}">Clear</a>{% endif %}
     </div>
     {% if edit_user %}
       <form method="post" class="admin-form">
@@ -43,7 +43,7 @@
   <section class="admin-panel">
     <div class="admin-panel__header">
       <h2>{% if edit_role %}Edit role{% else %}Roles{% endif %}</h2>
-      {% if edit_role %}<a href="{% url 'dashboard:users' %}">Clear</a>{% endif %}
+      {% if edit_role %}<a href="{% url 'management:users' %}">Clear</a>{% endif %}
     </div>
     <form method="post" class="admin-form mb-3">
       {% csrf_token %}
@@ -59,7 +59,7 @@
         <div class="compact-list__row">
           <span>{{ role.name }} <small>{{ role.user_count }} users</small></span>
           <span class="admin-actions">
-            <a class="btn btn-outline-light btn-sm" href="{% url 'dashboard:users' %}?edit_role={{ role.pk }}">Edit</a>
+            <a class="btn btn-outline-light btn-sm" href="{% url 'management:users' %}?edit_role={{ role.pk }}">Edit</a>
             <form method="post">
               {% csrf_token %}
               <input type="hidden" name="role_id" value="{{ role.pk }}">
@@ -99,7 +99,7 @@
             <td>{{ user.date_joined|date:"M d, Y" }}</td>
             <td>
               <div class="admin-actions">
-                <a class="btn btn-outline-light btn-sm" href="{% url 'dashboard:users' %}?edit_user={{ user.pk }}">Edit</a>
+                <a class="btn btn-outline-light btn-sm" href="{% url 'management:users' %}?edit_user={{ user.pk }}">Edit</a>
                 <form method="post">
                   {% csrf_token %}
                   <input type="hidden" name="user_id" value="{{ user.pk }}">

@@ -8,6 +8,7 @@ app_name = "accounts"
 
 urlpatterns = [
     path("profile/", views.profile, name="profile"),
+    path("login-router/", views.login_redirect_router, name="login-router"),
     path("login/", auth_views.LoginView.as_view(template_name="accounts/login.html", authentication_form=UserLoginForm), name="login"),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path("register/", views.register, name="register"),

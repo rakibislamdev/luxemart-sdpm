@@ -14,7 +14,7 @@
   <section class="admin-panel">
     <div class="admin-panel__header">
       <h2>{% if edit_product %}Edit product{% else %}Add product{% endif %}</h2>
-      {% if edit_product %}<a href="{% url 'dashboard:products' %}">Clear</a>{% endif %}
+      {% if edit_product %}<a href="{% url 'management:products' %}">Clear</a>{% endif %}
     </div>
     <form method="post" enctype="multipart/form-data" class="admin-form">
       {% csrf_token %}
@@ -89,7 +89,7 @@
               </td>
               <td>
                 <div class="admin-actions">
-                  <a class="btn btn-outline-light btn-sm" href="{% url 'dashboard:products' %}?edit={{ product.pk }}">Edit</a>
+                  <a class="btn btn-outline-light btn-sm" href="{% url 'management:products' %}?edit={{ product.pk }}">Edit</a>
                   <form method="post">
                     {% csrf_token %}
                     <input type="hidden" name="product_id" value="{{ product.pk }}">
