@@ -100,7 +100,7 @@ def product_detail(request, slug):
         .exclude(pk=product.pk)
         .order_by("-created_at")[:4]
     )
-    gallery_images = list(product.images.all())
+    gallery_images = list(product.images.all().order_by("-is_primary", "-created_at"))
 
     return render(
         request,

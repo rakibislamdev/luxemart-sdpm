@@ -14,8 +14,13 @@ class Role(TimeStampedModel):
 
 
 class User(AbstractUser):
+    email = models.EmailField(unique=True)
     role = models.ForeignKey(Role, on_delete=models.SET_NULL, null=True, blank=True)
     phone_number = models.CharField(max_length=30, blank=True)
+    address = models.TextField(blank=True, help_text="Street address, Apartment, etc.")
+    city = models.CharField(max_length=100, blank=True)
+    state = models.CharField(max_length=100, blank=True)
+    zip_code = models.CharField(max_length=20, blank=True)
     avatar = models.FileField(upload_to="avatars/", blank=True, null=True)
     is_active_customer = models.BooleanField(default=True)
 

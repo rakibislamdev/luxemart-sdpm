@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}Order Success | Luxemart{% endblock %}
+{% block content %}
+<section class="success-page text-center py-5">
+  <div class="luxe-card p-5 d-inline-block" style="max-width: 600px;">
+    <div class="mb-4">
+      <span style="font-size: 5rem;">✅</span>
+    </div>
+    <h1 class="mb-3">Thank You!</h1>
+    <p class="lead mb-4">Your order <strong>#{{ order.id }}</strong> has been placed successfully.</p>
+    <p class="text-muted mb-5">We've sent a confirmation email to your registered address. You can track your order status in your order history.</p>
+    
+    <div class="d-grid gap-2">
+      <a href="{% url 'orders:history' %}" class="btn btn-primary btn-lg">View Order History</a>
+      <a href="{% url 'catalog:product-list' %}" class="btn btn-outline-light">Continue Shopping</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
