@@ -123,3 +123,15 @@ def product_detail(request, slug):
             "gallery_images": gallery_images,
         },
     )
+
+
+def privacy_policy(request):
+    return render(request, "legal/privacy.html")
+
+
+def terms_of_service(request):
+    return render(request, "legal/terms.html")
+
+
+def help_center(request):
+    return render(request, "support/help.html")

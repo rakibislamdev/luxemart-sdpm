@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Help Center | Luxemart{% endblock %}
+{% block content %}
+<section class="help-page">
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold mb-3">How can we help?</h1>
+    <p class="lead text-muted">Search our knowledge base or browse common topics below.</p>
+    <div class="row justify-content-center mt-4">
+      <div class="col-md-6">
+        <div class="input-group input-group-lg">
+          <input type="text" class="form-control bg-dark border-secondary text-white" placeholder="Search for answers...">
+          <button class="btn btn-primary px-4" type="button">Search</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-5">
+    <div class="col-md-4">
+      <div class="luxe-card p-4 h-100">
+        <div class="h2 mb-3 text-primary">📦</div>
+        <h3 class="h5 fw-bold">Orders & Shipping</h3>
+        <ul class="list-unstyled text-white-50 small mt-3">
+          <li class="mb-2"><a href="#" class="text-decoration-none text-reset">Track my order</a></li>
+          <li class="mb-2"><a href="#" class="text-decoration-none text-reset">Shipping rates & times</a></li>
+          <li class="mb-2"><a href="#" class="text-decoration-none text-reset">International delivery</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="luxe-card p-4 h-100">
+        <div class="h2 mb-3 text-primary">💳</div>
+        <h3 class="h5 fw-bold">Payments & Billing</h3>
+        <ul class="list-unstyled text-white-50 small mt-3">
+          <li class="mb-2"><a href="#" class="text-decoration-none text-reset">Payment methods</a></li>
+          <li class="mb-2"><a href="#" class="text-decoration-none text-reset">Refund process</a></li>
+          <li class="mb-2"><a href="#" class="text-decoration-none text-reset">Invoice requests</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="luxe-card p-4 h-100">
+        <div class="h2 mb-3 text-primary">👤</div>
+        <h3 class="h5 fw-bold">Account Support</h3>
+        <ul class="list-unstyled text-white-50 small mt-3">
+          <li class="mb-2"><a href="#" class="text-decoration-none text-reset">Reset my password</a></li>
+          <li class="mb-2"><a href="#" class="text-decoration-none text-reset">Update profile details</a></li>
+          <li class="mb-2"><a href="#" class="text-decoration-none text-reset">Security settings</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="luxe-card p-5 text-center">
+    <h3 class="h4 mb-3">Still need help?</h3>
+    <p class="text-muted mb-4">Our dedicated support team is available 24/7 to assist you with any inquiries.</p>
+    <a href="mailto:support@luxemart.com" class="btn btn-outline-light btn-lg px-5">Contact Support</a>
+  </div>
+</section>
+{% endblock %}

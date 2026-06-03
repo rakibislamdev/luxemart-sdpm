@@ -78,12 +78,12 @@
           </div>
           <div class="col-6 col-lg-2">
             <h6>Legal</h6>
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
+            <a href="{% url 'privacy-policy' %}">Privacy Policy</a>
+            <a href="{% url 'terms-of-service' %}">Terms of Service</a>
           </div>
           <div class="col-6 col-lg-2">
             <h6>Support</h6>
-            <a href="#">Help Center</a>
+            <a href="{% url 'help-center' %}">Help Center</a>
             {% if user.is_staff %}
               <hr class="my-2 border-secondary opacity-25">
               <a href="{% url 'management:home' %}" class="text-primary fw-bold">Admin Portal</a>
