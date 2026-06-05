@@ -45,6 +45,11 @@
     <strong>{{ total_users }}</strong>
     <small>{{ active_customers }} active customers</small>
   </article>
+  <article class="admin-stat-card">
+    <span>Contact messages</span>
+    <strong>{{ unread_contact_messages }}</strong>
+    <small>{{ contact_message_count }} total submissions</small>
+  </article>
 </div>
 
 <div class="admin-grid admin-grid--two">
@@ -80,6 +85,23 @@
           </div>
           <div class="status-meter status-meter--warm"><span style="width: {{ item.percent }}%"></span></div>
         </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="admin-panel">
+    <div class="admin-panel__header">
+      <h2>Contact messages</h2>
+      <a href="{% url 'management:contact-messages' %}">Manage</a>
+    </div>
+    <div class="compact-list">
+      {% for submission in recent_contact_messages %}
+        <div class="compact-list__row">
+          <span>{{ submission.name }} <small>{{ submission.email }}</small></span>
+          <strong>{% if submission.is_reviewed %}Reviewed{% else %}New{% endif %}</strong>
+        </div>
+      {% empty %}
+        <p class="admin-empty">No contact messages yet.</p>
       {% endfor %}
     </div>
   </section>

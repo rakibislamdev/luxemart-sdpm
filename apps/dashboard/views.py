@@ -13,6 +13,7 @@ from apps.accounts.models import Role
 from apps.catalog.models import Category, Product, ProductImage
 from apps.orders.models import DeliveryInformation, Order, OrderItem
 from apps.payments.models import Payment
+from apps.notifications.models import ContactSubmission
 
 from .forms import (
     CategoryForm,
@@ -56,6 +57,7 @@ def admin_context(active):
             {"label": "Orders", "url_name": "management:orders", "key": "orders"},
             {"label": "Payments", "url_name": "management:payments", "key": "payments"},
             {"label": "Deliveries", "url_name": "management:deliveries", "key": "deliveries"},
+            {"label": "Contact Messages", "url_name": "management:contact-messages", "key": "contact-messages"},
             {"label": "Users & Roles", "url_name": "management:users", "key": "users"},
             {"label": "Reports", "url_name": "management:reports", "key": "reports"},
             {"label": "Django Admin", "url_name": "admin:index", "key": "django-admin"},
@@ -102,6 +104,9 @@ def home(request):
         "payment_statuses": status_breakdown(Payment.objects.all(), "status", Payment.Status.choices),
         "monthly_sales": monthly_sales,
         "top_products": top_products,
+        "contact_message_count": ContactSubmission.objects.count(),
+        "unread_contact_messages": ContactSubmission.objects.filter(is_reviewed=False).count(),
+        "recent_contact_messages": ContactSubmission.objects.order_by("-created_at")[:6],
         "low_stock_products": Product.objects.select_related("category").order_by("stock_quantity", "name")[:8],
         "recent_orders": Order.objects.select_related("user").order_by("-created_at")[:8],
         "recent_payments": Payment.objects.select_related("user", "order").order_by("-created_at")[:8],
@@ -393,6 +398,48 @@ def deliveries(request):
             **admin_context("deliveries"),
             "deliveries": delivery_list,
             "delivery_statuses": DeliveryInformation.objects.values("status").annotate(count=Count("id")).order_by("status"),
+        },
+    )
+
+
+@staff_member_required
+def contact_messages(request):
+    if request.method == "POST":
+        submission = get_object_or_404(ContactSubmission, pk=request.POST["submission_id"])
+        action = request.POST.get("action")
+
+        if action == "toggle_reviewed":
+            submission.is_reviewed = not submission.is_reviewed
+            submission.save(update_fields=["is_reviewed", "updated_at"])
+            messages.success(
+                request,
+                f"Contact message from {submission.name} marked as {'reviewed' if submission.is_reviewed else 'unreviewed'}.",
+            )
+        elif action == "delete":
+            submission.delete()
+            messages.success(request, "Contact message deleted.")
+
+        return redirect("management:contact-messages")
+
+    reviewed_filter = request.GET.get("reviewed", "")
+    submissions = ContactSubmission.objects.order_by("-created_at")
+    if reviewed_filter == "reviewed":
+        submissions = submissions.filter(is_reviewed=True)
+    elif reviewed_filter == "unreviewed":
+        submissions = submissions.filter(is_reviewed=False)
+
+    return render(
+        request,
+        "dashboard/contact_messages.html",
+        {
+            **admin_context("contact-messages"),
+            "submissions": submissions,
+            "reviewed_filter": reviewed_filter,
+            "submission_counts": {
+                "all": ContactSubmission.objects.count(),
+                "reviewed": ContactSubmission.objects.filter(is_reviewed=True).count(),
+                "unreviewed": ContactSubmission.objects.filter(is_reviewed=False).count(),
+            },
         },
     )
 
