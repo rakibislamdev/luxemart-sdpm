@@ -1,5 +1,8 @@
+from django.contrib import messages
 from django.db.models import Count, Q
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
+
+from apps.notifications.forms import ContactSubmissionForm
 
 from .models import Category, Product
 
@@ -134,4 +137,13 @@ def terms_of_service(request):
 
 
 def help_center(request):
-    return render(request, "support/help.html")
+    if request.method == "POST":
+        form = ContactSubmissionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Thanks for reaching out. We received your message and will review it soon.")
+            return redirect("help-center")
+    else:
+        form = ContactSubmissionForm()
+
+    return render(request, "support/help.html", {"form": form})
