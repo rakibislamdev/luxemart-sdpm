@@ -13,7 +13,12 @@ environ.Env.read_env(BASE_DIR / ".env")
 SECRET_KEY = env("SECRET_KEY", default="django-insecure-change-me")
 DEBUG = env.bool("DEBUG", default=False)
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
+if "kissing-going-manicotti.ngrok-free.dev" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append("kissing-going-manicotti.ngrok-free.dev")
+
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+if "https://kissing-going-manicotti.ngrok-free.dev" not in CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS.append("https://kissing-going-manicotti.ngrok-free.dev")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
