@@ -1,0 +1,90 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Contact Messages | Luxemart Admin{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page-header">
+  <div>
+    <span class="admin-kicker">Customer support</span>
+    <h1>Contact Messages</h1>
+    <p>Review messages submitted from the Contact Us form, mark them as reviewed, or delete spam entries.</p>
+  </div>
+  <form class="admin-filter" method="get">
+    <select class="form-select form-select-sm" name="reviewed">
+      <option value="" {% if not reviewed_filter %}selected{% endif %}>All messages</option>
+      <option value="unreviewed" {% if reviewed_filter == 'unreviewed' %}selected{% endif %}>Unreviewed</option>
+      <option value="reviewed" {% if reviewed_filter == 'reviewed' %}selected{% endif %}>Reviewed</option>
+    </select>
+    <button class="btn btn-outline-light btn-sm" type="submit">Filter</button>
+  </form>
+</div>
+
+<div class="admin-stat-grid admin-stat-grid--small">
+  <article class="admin-stat-card">
+    <span>Total messages</span>
+    <strong>{{ submission_counts.all }}</strong>
+    <small>All contact submissions</small>
+  </article>
+  <article class="admin-stat-card">
+    <span>Reviewed</span>
+    <strong>{{ submission_counts.reviewed }}</strong>
+    <small>Handled messages</small>
+  </article>
+  <article class="admin-stat-card">
+    <span>Unreviewed</span>
+    <strong>{{ submission_counts.unreviewed }}</strong>
+    <small>Needs follow-up</small>
+  </article>
+</div>
+
+<section class="admin-panel">
+  <div class="admin-panel__header">
+    <h2>Inbox</h2>
+  </div>
+  <div class="table-responsive">
+    <table class="admin-table admin-table--middle">
+      <thead>
+        <tr><th>Customer</th><th>Message</th><th>Status</th><th>Submitted</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for submission in submissions %}
+          <tr>
+            <td>
+              <strong>{{ submission.name }}</strong>
+              <small>{{ submission.email }}</small>
+            </td>
+            <td style="max-width: 40rem; white-space: normal;">
+              {{ submission.message }}
+            </td>
+            <td>
+              {% if submission.is_reviewed %}
+                <span class="status-pill status-pill--approved">Reviewed</span>
+              {% else %}
+                <span class="status-pill status-pill--pending">New</span>
+              {% endif %}
+            </td>
+            <td>{{ submission.created_at|date:"M d, Y H:i" }}</td>
+            <td>
+              <div class="admin-actions">
+                <form method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="submission_id" value="{{ submission.pk }}">
+                  <button class="btn btn-outline-light btn-sm" name="action" value="toggle_reviewed" type="submit">
+                    {% if submission.is_reviewed %}Mark unreviewed{% else %}Mark reviewed{% endif %}
+                  </button>
+                </form>
+                <form method="post" onsubmit="return confirm('Delete this contact message?');">
+                  {% csrf_token %}
+                  <input type="hidden" name="submission_id" value="{{ submission.pk }}">
+                  <button class="btn btn-outline-light btn-sm" name="action" value="delete" type="submit">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5">No contact messages found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}
