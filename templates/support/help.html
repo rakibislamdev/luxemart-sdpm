@@ -4,7 +4,7 @@
 <section class="help-page">
   <div class="text-center mb-5">
     <h1 class="display-4 fw-bold mb-3">How can we help?</h1>
-    <p class="lead text-muted">Search our knowledge base or browse common topics below.</p>
+    <p class="lead text-muted">Search our knowledge base, browse common topics below, or send us a message directly.</p>
     <div class="row justify-content-center mt-4">
       <div class="col-md-6">
         <div class="input-group input-group-lg">
@@ -53,8 +53,62 @@
 
   <div class="luxe-card p-5 text-center">
     <h3 class="h4 mb-3">Still need help?</h3>
-    <p class="text-muted mb-4">Our dedicated support team is available 24/7 to assist you with any inquiries.</p>
-    <a href="mailto:support@luxemart.com" class="btn btn-outline-light btn-lg px-5">Contact Support</a>
+    <p class="text-muted mb-4">Use the form below to send your name, email, issue, idea, or any suggestion. It will appear in the admin panel for follow-up.</p>
+  </div>
+
+  <div class="row g-4 mt-1">
+    <div class="col-lg-5">
+      <div class="luxe-card p-4 h-100">
+        <h3 class="h4 fw-bold mb-3">Contact information</h3>
+        <p class="text-white-50 mb-4">For direct help, you can also reach us by email while the contact form is being reviewed.</p>
+        <div class="d-grid gap-3">
+          <div>
+            <div class="text-uppercase text-white-50 small">Support email</div>
+            <div class="fw-semibold">support@luxemart.com</div>
+          </div>
+          <div>
+            <div class="text-uppercase text-white-50 small">What you can send</div>
+            <div class="fw-semibold">Issues, feature requests, suggestions, order questions, and feedback</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-7">
+      <div class="luxe-card p-4 p-md-5 h-100">
+        <h3 class="h4 fw-bold mb-3">Send a message</h3>
+        <form method="post" class="row g-3">
+          {% csrf_token %}
+          <div class="col-md-6">
+            <label for="id_name" class="form-label">Name</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+              <div class="text-danger small mt-1">{{ form.name.errors|striptags }}</div>
+            {% endif %}
+          </div>
+          <div class="col-md-6">
+            <label for="id_email" class="form-label">Email</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+              <div class="text-danger small mt-1">{{ form.email.errors|striptags }}</div>
+            {% endif %}
+          </div>
+          <div class="col-12">
+            <label for="id_message" class="form-label">Issue, question, or suggestion</label>
+            {{ form.message }}
+            {% if form.message.errors %}
+              <div class="text-danger small mt-1">{{ form.message.errors|striptags }}</div>
+            {% endif %}
+          </div>
+          {% if form.non_field_errors %}
+            <div class="col-12 text-danger small">{{ form.non_field_errors|striptags }}</div>
+          {% endif %}
+          <div class="col-12 d-flex align-items-center justify-content-between flex-wrap gap-3 pt-2">
+            <p class="text-white-50 mb-0 small">We store your submission in the admin panel so the team can review it later.</p>
+            <button type="submit" class="btn btn-primary btn-lg px-5">Send message</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </section>
 {% endblock %}
